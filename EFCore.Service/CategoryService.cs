@@ -37,9 +37,36 @@ public class CategoryService : ICategoryService
         return added;
     }
 
+
     public int LoadProducts(Category category)
     {
         this.context.Entry(category).Collection(c => c.Products).Load();
         return category.Products.Count;
+    }
+
+    public void Delete(Func<Category, bool> filter, bool loadRalatedData = false)
+    {
+        var categoriesToDelete = (loadRalatedData) ? this.context.Category.Include(c => c.Products).Where(filter).ToList() : this.context.Category.Where(filter).ToList();
+        if (categoriesToDelete != null)
+        {
+            this.context.Category.RemoveRange(categoriesToDelete);
+            this.context.SaveChanges();
+        }
+    }
+
+    public List<Category> Search(Func<Category, bool> filter, bool loadRalatedData = false)
+        => (loadRalatedData) ? this.context.Category.Include(c => c.Products).Where(filter).ToList() : this.context.Category.Where(filter).ToList();
+
+    public void Edit(int categoryIdToChange, string categoryName)
+    {
+        if (string.IsNullOrWhiteSpace(categoryName))
+            return;
+
+        var categoryToChange = GetCategoryById(categoryIdToChange);
+        if (categoryToChange != null)
+        {
+            categoryToChange.Name = categoryName;
+            context.SaveChanges();
+        }
     }
 }

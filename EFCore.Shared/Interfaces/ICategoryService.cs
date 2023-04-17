@@ -9,4 +9,7 @@ public interface ICategoryService
     Category? GetCategoryById(int id);
     Category? GetCategoryByName(string name);
     int LoadProducts(Category category);
+    void Delete(Func<Category, bool> filter, bool loadRalatedData = false);
+    List<Category> Search(Func<Category, bool> filter, bool loadRalatedData = false);
+    void Edit(int categoryIdToChange, string categoryName);
 }
